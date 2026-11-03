@@ -1,0 +1,910 @@
+# SoundMap – Complete Flutter + TensorFlow Lite Development Guide
+
+We're going to build SoundMap as a real Android and iOS application, not just a university demonstration.
+
+Since you already know Python, I'll explain Flutter and Dart step by step, while keeping the AI development familiar to you.
+
+My recommendation is to build the application incrementally. At every milestone, you will have something runnable and testable before moving to the next one.
+
+Project: SoundMap
+
+Development plan
+
+# Listen. Understand. Map.
+
+AI-powered environmental sound recognition and community noise intelligence.
+
+[SoundPrint Native App Exploration by Katie Cooper for Forge Studio on Dribbble](https://images.openai.com/static-rsc-4/LKUACCjLBQ0qyY4bnF0TiT-fxTVbyQxOBlGsfkcT-b4raJf7A5JxHgYjin8F0z6Uqf3Kh3NSxVOjkt-peqS9wyehT1kJrH-7FHVvMkEr2WWaZqnP9icLzDfas_cQe7UgiE6GjuTlONk4X9IycdSMHDeb-ezVErKlZ5f4Xpb8YKw?purpose=inline)
+
+[dribbble.com](https://dribbble.com/shots/22336114-SoundPrint-Native-App-Exploration?utm_source=chatgpt.com)
+
+Mobile framework
+
+Flutter / Dart
+
+AI engine
+
+TensorFlow Lite
+
+Database
+
+Firebase
+
+Map
+
+OpenStreetMap
+
+## 1. What we are going to build
+
+The finished app will have these main modules:
+
+| Module            | Function                                   |
+| ----------------- | ------------------------------------------ |
+| Sound Scanner     | Captures environmental audio               |
+| AI Recognition    | Identifies environmental sounds            |
+| Noise Meter       | Estimates sound intensity                  |
+| Live Sound Map    | Displays noise observations geographically |
+| Analytics         | Shows daily and weekly patterns            |
+| Community Reports | Allows users to report noise disturbances  |
+| User Profile      | Settings, privacy and scan history         |
+
+### Our development milestones
+
+1. Milestone 1 – Flutter foundation
+
+   Create the application, navigation, microphone permission, audio capture and basic noise estimation.
+
+   We start here
+2. Milestone 2 – AI sound recognition
+
+   Integrate a pretrained YAMNet model with TensorFlow Lite and classify sounds.
+3. Milestone 3 – SoundMap interface
+
+   Integrate GPS and OpenStreetMap to display sound observations.
+4. Milestone 4 – Firebase backend
+
+   Save scan summaries, retrieve nearby observations and manage user reports.
+5. Milestone 5 – Analytics
+
+   Build noise trends, sound distribution charts and hotspot analysis.
+6. Milestone 6 – Testing and release
+
+   Test different phones, improve accuracy, handle privacy and prepare the production application.
+
+We will not mix all these components together. This makes debugging much easier.
+
+# 2. Development environment setup
+
+## Required software
+
+Install the following on your Windows computer.
+
+[Flutter Logo Png | Flutter Logo Vector  - freepng](https://images.openai.com/static-rsc-4/Kf1oLrPLsYiMLjHrvCce5aaRvsMLUMGv4ZYxC5fzbGw5efto2hzXfsFgcqav6lsc5CwT-aCaun6C_R1XbweuI7932Fnxck_xyb-XLM4x3i0Md7qRP2Khr80h8LbCP3_ychxTCOYU2u-scVlihus4k5uRrLHLzxgllnChSlO2fQ8?purpose=inline)
+
+Flutter SDK
+
+Main mobile development framework.
+
+[Install Flutter on Windows](https://docs.flutter.dev/get-started/install/windows/mobile?utm_source=chatgpt.com)
+
+[Android Studio Download Free - 2026.1.2 | TechSpot](https://images.openai.com/static-rsc-4/j5rK6Ns2KM3ft2yV-q2d-eUSmCADYyMaY9hrzrxJ-BiKwo4K0fYxZ_Ef0ZDRTiS-1FrgltmV6Q1rgyvGQN5vQeGqQsga1EdS1Q-61cIajTe31ZYdWyWgEJlvAY3L3ti3NuHwp2DzdCo8-bI0Fw5PFzrO-pujSIXH0XpUVsgnYcg?purpose=inline)
+
+Android Studio
+
+Android SDK, emulator and build tools.
+
+[Download Android Studio](https://developer.android.com/studio?utm_source=chatgpt.com)
+
+[precis0x (@precisox) on X](https://images.openai.com/static-rsc-4/6UGebdew9WxthPsgkQBRJ_JmTfWW_y7agnczvltWrIQT3Fya6scbDbI6iPx5bLk5AYaAZn6vZ0m2arJ8MWgkkjeh-UTDFj7T_xmY-oHzvDmme3uha0Wp-xi3VPGSmRx9jEKG5QFBxu5oc1sgdei7nH2rGCbyU3I1ifuv0lVXmu0?purpose=inline)
+
+Visual Studio Code
+
+Your main code editor.
+
+[Download VS Code](https://code.visualstudio.com/?utm_source=chatgpt.com)
+
+[Hatem Soliman | Systems Engineer](https://images.openai.com/static-rsc-4/oC32nXVgWYp9yGjojEq_szNLU6GF5VKKfLTj19vgdHyqWfHGL8qfuwMlyZNqpU1RMwS834sEKi_q-dUyQ94hgFJODw62qrc_mIawEKCQmAfw2Ue3nPbTlQNE33SH8VxNqfRumJCmlc-5j1L-MySI_SMia9v67gAO5QIdCkUgtqM?purpose=inline)
+
+Git
+
+Version control and backup.
+
+[Download Git](https://git-scm.com/downloads?utm_source=chatgpt.com)
+
+In VS Code, install these extensions:
+
+- Flutter
+- Dart
+- Error Lens (optional)
+- GitLens (optional)
+
+### Check your installation
+
+Open the VS Code terminal and execute:
+
+```
+flutter doctor
+```
+
+You should see Flutter, Android toolchain and VS Code listed.
+
+If Android licenses are pending:
+
+```
+flutter doctor --android-licenses
+```
+
+Accept the required licenses.
+
+Then connect your Android phone using USB debugging or start an Android emulator.
+
+Check connected devices:
+
+```
+flutter devices
+```
+
+My recommendation: Test microphone functionality on a physical Android phone. Emulators are useful for UI development, but real microphones and device behavior should be tested on actual hardware.
+
+# Milestone 1: Create a working sound scanner
+
+This first version will already run on Android and will:
+
+- Ask for microphone permission.
+- Start and stop audio scanning.
+- Read live audio from the microphone.
+- Calculate a relative audio signal level.
+- Display a live meter and scan status.
+- Keep audio processing on the device without uploading recordings.
+
+It will not yet identify sounds or display a map. Those are the next milestones.
+
+## Step 1. Create the Flutter project
+
+Open the VS Code terminal and run:
+
+```
+flutter create --org com.soundmap soundmap
+cd soundmap
+code .
+```
+
+If `code .` does not work, open VS Code manually and choose File → Open Folder → soundmap.
+
+Check the project:
+
+```
+flutter pub get
+flutter run
+```
+
+You should see the default Flutter counter application on your device. This confirms your environment is working.
+
+## Step 2. Install the audio package
+
+In the VS Code terminal, run:
+
+```
+flutter pub add record
+```
+
+We'll use the `record` package to access microphone audio as a PCM stream. It supports Android and iOS.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://pub.dev\&sz=32)
+
+Flutter package+1
+
+
+
+We do not need a separate permission package for this first milestone because the recorder itself provides `hasPermission()`.
+
+## Step 3. Add microphone permissions
+
+### Android
+
+Open:
+
+`android/app/src/main/AndroidManifest.xml`
+
+Add the permission directly under the opening `manifest` element, before the `application` element:
+
+```
+<uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
+
+Your file should have this general structure:
+
+```
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission
+        android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:label="soundmap"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <!-- Keep the existing activity configuration here. -->
+
+    </application>
+</manifest>
+```
+
+Keep the other existing configuration in your actual file. Do not replace your complete manifest with the abbreviated example.
+
+### iOS
+
+When you are ready to build for iOS, open:
+
+`ios/Runner/Info.plist`
+
+Add these entries inside the existing `dict` element:
+
+```
+<key>NSMicrophoneUsageDescription</key>
+<string>SoundMap uses your microphone to analyze environmental sounds while you scan.</string>
+```
+
+iOS builds require macOS and Xcode. For now, you can develop and test on Android.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://pub.dev\&sz=32)
+
+Flutter package+1
+
+
+
+## Step 4. Create the initial project structure
+
+We'll start with a small structure rather than adding too many files.
+
+soundmap/
+
+android/
+
+ios/
+
+lib/
+
+`main.dart`
+
+We edit this
+
+test/
+
+pubspec.yaml
+
+As the application grows, we will move audio processing, AI, maps, and Firebase into separate files under `lib/`.
+
+## Step 5. Add the complete scanner code
+
+Open `lib/main.dart`.
+
+Select all existing code and replace it with the following. This is a complete first version, including the UI and audio processing.
+
+```
+
+import 'dart:async';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+import 'package:record/record.dart';
+
+void main() {
+  runApp(const SoundMapApp());
+}
+
+class SoundMapApp extends StatelessWidget {
+  const SoundMapApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'SoundMap',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF36C7B0),
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0B1220),
+      ),
+      home: const ScannerScreen(),
+    );
+  }
+}
+
+class ScannerScreen extends StatefulWidget {
+  const ScannerScreen({super.key});
+
+  @override
+  State<ScannerScreen> createState() => _ScannerScreenState();
+}
+
+class _ScannerScreenState extends State<ScannerScreen> {
+  final AudioRecorder _recorder = AudioRecorder();
+
+  StreamSubscription<Uint8List>? _audioSubscription;
+
+  bool _isScanning = false;
+  bool _isBusy = false;
+
+  double _dbfs = -60.0;
+  String _status = 'Ready to scan';
+  String? _errorMessage;
+
+  DateTime? _lastUiUpdate;
+  DateTime? _scanStartedAt;
+
+  Duration get _scanDuration {
+    if (!_isScanning || _scanStartedAt == null) {
+      return Duration.zero;
+    }
+    return DateTime.now().difference(_scanStartedAt!);
+  }
+
+  String get _durationText {
+    final seconds = _scanDuration.inSeconds;
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+
+    return '${minutes.toString().padLeft(2, '0')}:'
+        '${remainingSeconds.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _startScan() async {
+    if (_isBusy || _isScanning) return;
+
+    setState(() {
+      _isBusy = true;
+      _errorMessage = null;
+      _status = 'Checking microphone permission...';
+    });
+
+    try {
+      final permitted = await _recorder.hasPermission();
+
+      if (!permitted) {
+        if (!mounted) return;
+        setState(() {
+          _status = 'Microphone permission required';
+          _errorMessage =
+              'Allow microphone access in your phone settings '
+              'to start a scan.';
+        });
+        return;
+      }
+
+      final audioStream = await _recorder.startStream(
+        const RecordConfig(
+          encoder: AudioEncoder.pcm16bits,
+          sampleRate: 16000,
+          numChannels: 1,
+          autoGain: false,
+          echoCancel: false,
+          noiseSuppress: false,
+        ),
+      );
+
+      _scanStartedAt = DateTime.now();
+      _lastUiUpdate = null;
+
+      _audioSubscription = audioStream.listen(
+        _processAudio,
+        onError: (Object error) {
+          if (!mounted) return;
+          setState(() {
+            _errorMessage = 'Audio input failed: $error';
+            _status = 'Audio error';
+          });
+          unawaited(_stopScan());
+        },
+        onDone: () {
+          if (mounted && _isScanning) {
+            unawaited(_stopScan());
+          }
+        },
+      );
+
+      if (!mounted) {
+        await _audioSubscription?.cancel();
+        await _recorder.stop();
+        return;
+      }
+
+      setState(() {
+        _isScanning = true;
+        _status = 'Listening to your environment';
+      });
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _status = 'Could not start scanner';
+          _errorMessage = error.toString();
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isBusy = false);
+      }
+    }
+  }
+
+  void _processAudio(Uint8List chunk) {
+    // PCM 16-bit audio contains two bytes per sample.
+    final usableLength = chunk.length - (chunk.length % 2);
+    if (usableLength < 2) return;
+
+    final data = ByteData.sublistView(chunk, 0, usableLength);
+
+    double sumSquares = 0;
+    final sampleCount = usableLength ~/ 2;
+
+    for (int i = 0; i < usableLength; i += 2) {
+      final sample = data.getInt16(i, Endian.little);
+      final normalized = sample / 32768.0;
+      sumSquares += normalized * normalized;
+    }
+
+    final rms = math.sqrt(sumSquares / sampleCount);
+
+    // Relative full-scale level, NOT calibrated sound pressure.
+    final level = rms <= 0
+        ? -120.0
+        : 20.0 * (math.log(rms) / math.ln10);
+
+    // Avoid rebuilding the UI for every audio chunk.
+    final now = DateTime.now();
+    if (_lastUiUpdate != null &&
+        now.difference(_lastUiUpdate!) <
+            const Duration(milliseconds: 150)) {
+      return;
+    }
+
+    _lastUiUpdate = now;
+
+    if (!mounted) return;
+    setState(() {
+      _dbfs = level.clamp(-60.0, 0.0).toDouble();
+    });
+  }
+
+  Future<void> _stopScan() async {
+    if (_isBusy || !_isScanning) return;
+
+    setState(() {
+      _isBusy = true;
+      _status = 'Stopping scan...';
+    });
+
+    try {
+      await _audioSubscription?.cancel();
+      _audioSubscription = null;
+      await _recorder.stop();
+
+      if (mounted) {
+        setState(() {
+          _isScanning = false;
+          _status = 'Scan stopped';
+          _dbfs = -60.0;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'Could not stop scanner: $error';
+        });
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isBusy = false);
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _audioSubscription?.cancel();
+    unawaited(_recorder.dispose());
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final meterValue = ((_dbfs + 60.0) / 60.0).clamp(0.0, 1.0);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Row(
+          children: [
+            Icon(Icons.graphic_eq, color: Color(0xFF36C7B0)),
+            SizedBox(width: 10),
+            Text(
+              'SoundMap',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Understand your environment.',
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Scan environmental sounds around you.',
+                style: TextStyle(color: Colors.grey.shade400),
+              ),
+              const SizedBox(height: 28),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(22),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF151F31),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: const Color(0xFF29364B),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      _isScanning
+                          ? Icons.graphic_eq
+                          : Icons.multitrack_audio,
+                      size: 46,
+                      color: const Color(0xFF36C7B0),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _isScanning ? 'SCANNING' : 'SOUND SCANNER',
+                      style: const TextStyle(
+                        letterSpacing: 2,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF36C7B0),
+                      ),
+                    ),
+                    const SizedBox(height: 26),
+
+                    Text(
+                      '${_dbfs.toStringAsFixed(1)} dBFS',
+                      style: const TextStyle(
+                        fontSize: 39,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Relative audio signal level',
+                      style: TextStyle(color: Colors.grey.shade400),
+                    ),
+                    const SizedBox(height: 22),
+
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: LinearProgressIndicator(
+                        value: meterValue,
+                        minHeight: 12,
+                        backgroundColor: const Color(0xFF29364B),
+                        color: const Color(0xFF36C7B0),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 9,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0B1220),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.circle,
+                            size: 9,
+                            color: _isScanning
+                                ? const Color(0xFF36C7B0)
+                                : Colors.grey,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(_status),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: FilledButton.icon(
+                        onPressed: _isBusy
+                            ? null
+                            : (_isScanning ? _stopScan : _startScan),
+                        icon: Icon(
+                          _isScanning
+                              ? Icons.stop_circle_outlined
+                              : Icons.mic,
+                        ),
+                        label: Text(
+                          _isBusy
+                              ? 'Please wait...'
+                              : (_isScanning
+                                  ? 'Stop scan'
+                                  : 'Start scan'),
+                        ),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFF36C7B0),
+                          foregroundColor: const Color(0xFF07131B),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _infoCard(
+                      icon: Icons.timer_outlined,
+                      title: 'Duration',
+                      value: _durationText,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _infoCard(
+                      icon: Icons.shield_outlined,
+                      title: 'Privacy',
+                      value: 'On-device',
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 18),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF172437),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Color(0xFF36C7B0),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'This prototype measures relative microphone '
+                        'signal level. It does not yet identify sounds '
+                        'or measure calibrated environmental noise in '
+                        'dB SPL. No audio is uploaded.',
+                        style: TextStyle(height: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
+                ),
+              ],
+
+              const SizedBox(height: 20),
+              Center(
+                child: Text(
+                  'SOUNDMAP • EARLY ACCESS BUILD',
+                  style: TextStyle(
+                    fontSize: 11,
+                    letterSpacing: 1.5,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _infoCard({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF151F31),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: const Color(0xFF36C7B0)),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: TextStyle(color: Colors.grey.shade400),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+```
+
+## Step 6. Run the application
+
+Save `main.dart` with `Ctrl + S`, then execute these commands in the VS Code terminal:
+
+```
+flutter pub get
+flutter analyze
+flutter run
+```
+
+If `flutter analyze` reports a warning, that doesn't always mean the app is broken. Fix any compilation errors before continuing.
+
+When the application opens on your phone:
+
+1. Tap Start scan.
+2. Allow microphone access when Android asks.
+3. Speak nearby or make a sound at a safe distance from the microphone.
+4. Observe whether the relative audio signal level changes.
+5. Tap Stop scan and verify that the scanner stops.
+
+The meter updates as audio arrives. The reading is expressed in dBFS, a digital signal-level scale; it is not a calibrated environmental noise reading in dB SPL.
+
+## Step 7. Test the first milestone
+
+Use this checklist on your phone.
+
+Milestone 1 verification
+
+## 0/6
+
+App launches without crashing
+
+Home screen and SoundMap title appear.
+
+Microphone permission works
+
+The phone requests permission before recording.
+
+Live meter responds
+
+The meter changes when nearby sound changes.
+
+Stop button works
+
+Microphone capture stops when requested.
+
+Permission denial is handled
+
+The app explains why scanning cannot start.
+
+No recordings are uploaded
+
+This version has no upload or database code.
+
+### If the meter does not move
+
+- Check the microphone permission in Android Settings → Apps → SoundMap → Permissions.
+- Close other apps that may be using the microphone.
+- Check the terminal for errors.
+- Test on a physical phone rather than relying only on an emulator.
+
+The recorder package supports streaming PCM audio, which is what we need for the next stage.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://pub.dev\&sz=32)
+
+Flutter package+1
+
+
+
+# Milestone 2: Integrate the AI model
+
+Once the scanner works, we will add the first real AI feature.
+
+## Which model will we use?
+
+[Converting YAMNet audio detection model for TensorFlow Lite | Medium](https://images.openai.com/static-rsc-4/i-_KWhUfydhpwuk8b1J4yQXvHWa_03VOY4AlsNvpH9EPJJd9YbN3B0JXG3qYgo5fX43vtic6TjM63eND4QmeH-LYImdxkbOypKoSCb1gdSS51RASFdynae7sTwRuNoX4XAk6M2akl7iZwISRb68FGKxookWdfi064qH7qgsVuxg?purpose=inline)
+
+YAMNet — pretrained environmental sound classifier
+
+YAMNet recognizes 521 audio event classes. It expects a mono waveform sampled at 16 kHz, with 15,600 float32 samples per input window.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://www.tensorflow.org\&sz=32)
+
+TensorFlow+1
+
+
+
+This allows us to build a baseline without training an AI model from scratch.
+
+[Read the official YAMNet tutorial](https://www.tensorflow.org/hub/tutorials/yamnet?utm_source=chatgpt.com)
+
+### Important implementation detail
+
+Our microphone code already requests 16 kHz PCM audio, but that alone does not make it ready for YAMNet. We must:
+
+1. Convert PCM16 samples into normalized float32 values between -1 and 1.
+2. Accumulate samples into windows of exactly 15,600 samples.
+3. Load a compatible `.tflite` model and its matching label list.
+4. Run inference using the `tflite_flutter` interpreter.
+5. Display the top sound predictions and confidence scores.
+6. Handle model initialization and inference errors without freezing the UI.
+
+The Flutter package is documented here: [tflite_flutter on pub.dev](https://pub.dev/packages/tflite_flutter?utm_source=chatgpt.com). Its current documentation notes an Android API level requirement of 26 for its dynamic-library setup, so we will verify the Android minimum SDK before integrating it.&#x20;
+
+[image](https://www.google.com/s2/favicons?domain=https://pub.dev\&sz=32)
+
+Flutter package
+
+
+
+We will implement this in a separate `lib/services/sound_classifier.dart` file rather than putting AI code inside `main.dart`.
+
+## What comes after AI?
+
+Milestone 2 — Sound recognition
+
+The app identifies likely traffic, horns, birds, machinery and other supported categories.
+
+Milestone 3 — Live map
+
+Add GPS and OpenStreetMap using Flutter's map packages.
+
+Milestone 4 — Firebase
+
+Save scan summaries, display community reports and aggregate observations by area.
+
+Your next action: Complete Milestone 1 and run the app on your Android phone. If it works, tell me “Milestone 1 completed”. If you get an error, send me the exact terminal error or a screenshot. I'll help you fix it before we add the AI model.

@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "SoundMap - Environmental Sound Recognition",
+  "short_name": "SoundMap",
+  "description": "AI-powered environmental sound recognition, live noise meter, and community sound mapping platform.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0B1220",
+  "theme_color": "#0B1220",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

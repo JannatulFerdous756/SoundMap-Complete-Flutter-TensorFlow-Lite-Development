@@ -1,0 +1,28 @@
+name: soundmap
+description: SoundMap - AI-powered environmental sound recognition and community noise intelligence.
+version: 1.0.0+1
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Audio capture stream (PCM 16-bit 16kHz)
+  record: ^5.1.2
+  # TensorFlow Lite for on-device YAMNet inference
+  tflite_flutter: ^0.10.4
+  # Map & Location for SoundMap
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.1
+  geolocator: ^11.0.0
+  # Firebase Backend
+  firebase_core: ^2.30.0
+  cloud_firestore: ^4.17.0
+  # Analytics charts
+  fl_chart: ^0.68.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/models/yamnet.tflite
+    - assets/models/yamnet_label_list.txt

@@ -1,0 +1,6 @@
+{
+  "name": "SoundMap - Environmental Sound & Noise Intelligence",
+  "description": "AI-powered environmental sound recognition, live noise meter, and community sound mapping platform.",
+  "requestFramePermissions": ["geolocation", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
